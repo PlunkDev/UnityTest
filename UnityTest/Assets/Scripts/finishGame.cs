@@ -1,14 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class finishGame : MonoBehaviour
 {
-
     public PlayerController playerController;
-    public AudioSource audioSource;
-    public AudioClip victoryAudio;
-    public AudioClip wrongAudio;
+    public GameObject leftdoor;
+    public GameObject rightdoor;
+    bool opened = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,23 +19,23 @@ public class finishGame : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (playerController.zebranePunkty == playerController.maxPunkty)
+        {
+            if(!opened)
+            {
+                leftdoor.transform.Translate(2, 0, 0);
+                rightdoor.transform.Translate(-2, 0, 0);
+                opened = true;
+            }
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
         {
-            if (playerController.zebranePunkty == playerController.maxPunkty)
-            {
-                audioSource.PlayOneShot(victoryAudio);
-                Debug.Log("Zebrano wszystkie monetki! Wygrywasz!");
-            }
-            else
-            {
-                audioSource.PlayOneShot(wrongAudio);
-                Debug.Log("Brakuje monetek!");
-            }
+            Debug.Log("Wygra³eœ!");
+            SceneManager.LoadScene("MainMenu");
         }
     }
 }

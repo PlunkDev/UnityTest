@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class PlayerController : MonoBehaviour
     public int maxPunkty;
     public Rigidbody rigidbody;
     public Transform startPoint;
+    public Transform cam;
+    public Transform checkpoint;
 
     // Start is called before the first frame update
     void Start()
@@ -20,23 +23,41 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //MOVEMENT
+        // MOVEMENT
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
 
-        if (Input.GetAxis("Horizontal") != 0)
+        if (horizontal != 0 || vertical != 0)
         {
-            float directionHorizontal = Input.GetAxis("Horizontal");
-            rigidbody.AddForce(directionHorizontal * Time.deltaTime * speed, 0, 0, ForceMode.Impulse);
-        }
+            // Pobieramy kierunki kamery
+            Vector3 cameraForward = cam.forward;
+            Vector3 cameraRight = cam.right;
 
-        if (Input.GetAxis("Vertical") != 0)
-        {
-            float directionVertical = Input.GetAxis("Vertical");
-            rigidbody.AddForce(0, 0, directionVertical * Time.deltaTime * speed, ForceMode.Impulse);
+            // Ignorujemy oœ Y, aby gracz nie porusza³ siê w górê/dó³
+            cameraForward.y = 0;
+            cameraRight.y = 0;
+
+            // Normalizujemy kierunki
+            cameraForward.Normalize();
+            cameraRight.Normalize();
+
+            // Obliczamy kierunek ruchu
+            Vector3 moveDirection = cameraForward * vertical + cameraRight * horizontal;
+
+            // Dodajemy si³ê w kierunku ruchu
+            rigidbody.AddForce(moveDirection * speed * Time.deltaTime, ForceMode.Impulse);
         }
-        if (transform.position.y < 0)
+        //if (transform.position.y < 0)
+        //{
+        //  transform.position = startPoint.position;
+        //rigidbody.velocity = Vector3.zero;
+        //}
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Enemy")
         {
-            transform.position = startPoint.position;
-            rigidbody.velocity = Vector3.zero;
+            transform.position = checkpoint.position;
         }
     }
 }
