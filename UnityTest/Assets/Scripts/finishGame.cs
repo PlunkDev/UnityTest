@@ -9,6 +9,7 @@ public class finishGame : MonoBehaviour
     public PlayerController playerController;
     public GameObject leftdoor;
     public GameObject rightdoor;
+    public string nextScene;
     bool opened = false;
     // Start is called before the first frame update
     void Start()
@@ -35,7 +36,7 @@ public class finishGame : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             Debug.Log("Wygra³eœ!");
-            SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene(nextScene);
         }
     }
 }

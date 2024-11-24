@@ -4,55 +4,68 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class doorSystem : MonoBehaviour
+public class DoorSystem : MonoBehaviour
 {
-
     public PlayerController playerController;
+    public AudioSource AudioSource;
+    public AudioClip clip;
     public bool is_closed = true;
     public TextMeshProUGUI hints;
     public GameObject leftdoor;
     public GameObject rightdoor;
-    // Start is called before the first frame update
+    public GameObject leftOpen;
+    public GameObject rightOpen;
+    public GameObject leftClosed;
+    public GameObject rightClosed;
+
+    bool isOnTrigger = false;
+
+    // Prêdkoœæ przesuwania drzwi
+    public float doorSpeed = 1.0f;
+
     void Start()
     {
         hints.text = "";
     }
 
-    // Update is called once per frame
     void Update()
     {
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.tag == "Player")
+        if (isOnTrigger)
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
-                if (is_closed)
-                {
-                    Debug.Log("Otwiera siê");
-                    is_closed = false;
-                    leftdoor.transform.Translate(-2, 0, 0);
-                    rightdoor.transform.Translate(2, 0, 0);
-                }
-                else
-                {
-                    Debug.Log("Zamyka siê");
-                    is_closed = true;
-                    leftdoor.transform.Translate(2, 0, 0);
-                    rightdoor.transform.Translate(-2, 0, 0);
-                }
+                AudioSource.PlayOneShot(clip);
+                is_closed = !is_closed;
             }
-
         }
+
+        if (is_closed)
+        {
+            MoveDoor(leftdoor, leftClosed.transform.position);
+            MoveDoor(rightdoor, rightClosed.transform.position);
+        }
+        else
+        {
+            MoveDoor(leftdoor, leftOpen.transform.position);
+            MoveDoor(rightdoor, rightOpen.transform.position);
+        }
+    }
+
+    void MoveDoor(GameObject door, Vector3 targetPosition)
+    {
+        door.transform.position = Vector3.MoveTowards(
+            door.transform.position,
+            targetPosition,
+            doorSpeed * Time.deltaTime
+        );
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
         {
-            hints.text = "Press E to Interact (Try it a few times)";
+            isOnTrigger = true;
+            hints.text = "Press E to Interact";
         }
     }
 
@@ -60,6 +73,7 @@ public class doorSystem : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
+            isOnTrigger = false;
             hints.text = "";
         }
     }

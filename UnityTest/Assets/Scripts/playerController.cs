@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public Transform startPoint;
     public Transform cam;
     public Transform checkpoint;
+    public bool isSmall;
 
     // Start is called before the first frame update
     void Start()
@@ -23,28 +24,36 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(isSmall)
+        {
+            rigidbody.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        } else
+        {
+            rigidbody.transform.localScale = new Vector3(1, 1, 1);
+        }
+
         // MOVEMENT
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
         if (horizontal != 0 || vertical != 0)
         {
-            // Pobieramy kierunki kamery
+
             Vector3 cameraForward = cam.forward;
             Vector3 cameraRight = cam.right;
 
-            // Ignorujemy oœ Y, aby gracz nie porusza³ siê w górê/dó³
+
             cameraForward.y = 0;
             cameraRight.y = 0;
 
-            // Normalizujemy kierunki
+
             cameraForward.Normalize();
             cameraRight.Normalize();
 
-            // Obliczamy kierunek ruchu
+
             Vector3 moveDirection = cameraForward * vertical + cameraRight * horizontal;
 
-            // Dodajemy si³ê w kierunku ruchu
+
             rigidbody.AddForce(moveDirection * speed * Time.deltaTime, ForceMode.Impulse);
         }
         //if (transform.position.y < 0)
